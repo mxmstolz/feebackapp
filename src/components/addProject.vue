@@ -1,14 +1,20 @@
 <template>
     <v-container fluid fill-height>
-        <v-layout justify-start column fill-height>
-            <v-flex xs12 sm8 md6>
+        <!-- <v-layout justify-start column fill-height> -->
+        <v-layout>
+            <v-flex xs12 sm10 offset-sm1 md10>
                 <v-toolbar color="blue darken-3" dark>
                         <v-toolbar-title>Fragebogen</v-toolbar-title>
                         <v-spacer></v-spacer>
-                    <v-btn icon @click="add()">
-                        <v-icon>add</v-icon>
+                    <v-btn icon to="/">
+                        <v-icon>close</v-icon>
                     </v-btn>
                 </v-toolbar>
+                <v-card>
+                    <v-card-title>
+                        <v-text-field outline required v-model="projectName" label="Projektname" type="text"></v-text-field>
+                    </v-card-title>
+                </v-card>
                 <v-card v-for="(question, index) in questions" :key="index">                    
                     <!-- <v-card-text> -->
                         <v-container>
@@ -38,6 +44,14 @@
                     <!-- <v-card-actions>
                         
                     </v-card-actions> -->
+                </v-card>
+                <v-card>
+                    <v-card-title>
+                        <!-- Weitere Frage hinzufügen -->
+                        <v-btn color=secondary @click="add">
+                            Weitere Frage hinzufügen<v-icon >add</v-icon>
+                        </v-btn>
+                    </v-card-title>
                 </v-card>
                 <v-card>
                     <v-container>
@@ -78,6 +92,7 @@
 export default {
   data() {
     return {
+      projectName: '',
       select: null,
       mood: 0,
       comment: '',

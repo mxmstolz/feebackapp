@@ -1,44 +1,46 @@
 <template>
-  <v-layout row>
-    <v-flex xs12 sm8 offset-sm2>
-      <v-card>
-         <v-toolbar color="blue darken-3" dark>
-          <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
+  <v-container fluid fill-height>
+    <v-layout row>
+      <v-flex xs12 sm10 md10 offset-sm1>
+        <v-card>
+          <v-toolbar color="blue darken-3" dark>
+            <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
 
-          <v-toolbar-title>Dashboard</v-toolbar-title>
+            <v-toolbar-title>Dashboard</v-toolbar-title>
 
-          <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
 
-          <v-btn icon to="/add">
-            <v-icon>add</v-icon>
-          </v-btn>
-          <v-btn icon @click="add()">
-            <v-icon>code</v-icon>
-          </v-btn>
-        </v-toolbar>
+            <v-btn icon to="/add">
+              <v-icon>add</v-icon>
+            </v-btn>
+            <v-btn icon @click="add()">
+              <v-icon>code</v-icon>
+            </v-btn>
+          </v-toolbar>
 
-        <v-list two-line>
-          <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
-            <template v-for="(project, index) in projects">
-              <v-list-tile avatar ripple :key="project.id" @click="toggle(index)">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ project.name }}</v-list-tile-title>
-                  <keep-alive>
-                  <v-list-tile-sub-title>{{ getProjectLeader(project.memberId) }} </v-list-tile-sub-title>
-                  </keep-alive>
-                </v-list-tile-content>
+          <v-list two-line>
+            <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
+              <template v-for="(project, index) in projects">
+                <v-list-tile avatar ripple :key="project.id" @click="toggle(index)">
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ project.name }}</v-list-tile-title>
+                    <keep-alive>
+                    <v-list-tile-sub-title>{{ getProjectLeader(project.memberId) }} </v-list-tile-sub-title>
+                    </keep-alive>
+                  </v-list-tile-content>
 
-                <v-list-tile-action>
-                  <v-btn icon @click="deleteProject(index)">
-                    <v-icon color="red darken-1">delete</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile>
-            </template>
-        </v-list>
-      </v-card>
-    </v-flex>
-  </v-layout>
+                  <v-list-tile-action>
+                    <v-btn icon @click="deleteProject(index)">
+                      <v-icon color="red darken-1">delete</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </template>
+          </v-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
