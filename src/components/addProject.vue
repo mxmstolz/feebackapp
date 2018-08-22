@@ -116,6 +116,7 @@ export default {
     },
 
     submit: function() {
+      console.log(this.projectName);
       console.log(this.questions);
       console.log(this.mood);
       console.log(this.comment);
