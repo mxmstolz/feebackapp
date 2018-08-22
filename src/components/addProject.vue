@@ -46,14 +46,16 @@
                     </v-card-actions> -->
                 </v-card>
                 <v-card>
-                    <v-card-title>
+                    <v-card-actions>
                         <!-- Weitere Frage hinzufügen -->
                         <v-btn color=secondary @click="add">
                             Weitere Frage hinzufügen<v-icon >add</v-icon>
                         </v-btn>
-                    </v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-btn color=primary @click="submit">Fragebogen erstellen</v-btn>
+                    </v-card-actions>
                 </v-card>
-                <v-card>
+                <!-- <v-card>
                     <v-container>
                         <v-layout align-start justify-space-around row fill-height>
                             <v-btn icon @click="addMood(1)">
@@ -79,10 +81,10 @@
                             v-model="comment"
                         ></v-textarea>
                     </v-card-text>
-                </v-card>
-                <v-card>
+                </v-card>-->
+                <!-- <v-card>
                     <v-btn color=primary @click="submit">Fragebogen erstellen</v-btn>
-                </v-card>
+                </v-card>  -->
             </v-flex>
         </v-layout>
     </v-container>
@@ -92,10 +94,11 @@
 export default {
   data() {
     return {
+      projectId: '',
       projectName: '',
       select: null,
-      mood: 0,
-      comment: '',
+      //   mood: 0,
+      //   comment: '',
       count: 1,
       questions: [{ question: '', option: null }],
       granularity: [4, 6, 8, 10]
@@ -118,8 +121,37 @@ export default {
     submit: function() {
       console.log(this.projectName);
       console.log(this.questions);
-      console.log(this.mood);
-      console.log(this.comment);
+      axios
+        .post('http://localhost:3000/api/project_groups', {
+          name: this.projectName,
+          memberId: '5b7c2d0727773120d0567caa'
+        })
+        .then(v => {
+          this.projectId = v.data.id;
+          this.postQuestions();
+          this.$router.push('/');
+          //   console.log('ID ist: ' + this.projectId);
+        })
+        .catch(error => console.log(error));
+    },
+
+    postQuestions: function() {
+      this.questions.forEach(v => {
+        axios
+          .post(
+            'http://localhost:3000/api/feedback_questions?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf',
+            {
+              question: v.question,
+              granularity: v.option,
+              projectGroupId: this.projectId
+            }
+          )
+          .then(v => {
+            console.log(v);
+            //   console.log('ID ist: ' + this.projectId);
+          })
+          .catch(error => console.log(error));
+      });
     }
   }
 };

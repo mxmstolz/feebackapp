@@ -13,9 +13,9 @@
             <v-btn icon to="/add">
               <v-icon>add</v-icon>
             </v-btn>
-            <v-btn icon @click="add()">
+            <!-- <v-btn icon @click="add()">
               <v-icon>code</v-icon>
-            </v-btn>
+            </v-btn> -->
           </v-toolbar>
 
           <v-list two-line>
@@ -55,18 +55,18 @@ export default {
     this.getProjects();
   },
   methods: {
-    add: function() {
-      axios
-        .post('http://localhost:3000/api/project_groups', {
-          name: 'Vue.js',
-          memberId: '5b7c2d0727773120d0567caa'
-        })
-        .then(() => {
-          this.projects = [];
-          this.getProjects();
-        })
-        .catch(error => console.log(error));
-    },
+    // add: function() {
+    //   axios
+    //     .post('http://localhost:3000/api/project_groups', {
+    //       name: 'Vue.js',
+    //       memberId: '5b7c2d0727773120d0567caa'
+    //     })
+    //     .then(() => {
+    //       this.projects = [];
+    //       this.getProjects();
+    //     })
+    //     .catch(error => console.log(error));
+    // },
 
     getProjectLeader: function(id) {
       console.log(id);
@@ -87,6 +87,17 @@ export default {
     deleteProject: function(index) {
       // alert(index);
       console.log('Lösche Projekt mit der ID: ' + this.projects[index].id);
+      axios
+        .delete(
+          'http://localhost:3000/api/project_groups/' +
+            this.projects[index].id +
+            '/feedbackForm'
+        )
+        .then(() => {
+          console.log('FeedbackForm gelöscht');
+        })
+        .catch(error => console.log(error));
+
       axios
         .delete(
           'http://localhost:3000/api/project_groups/' + this.projects[index].id
