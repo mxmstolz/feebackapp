@@ -40,9 +40,9 @@
           </v-dialog>
           <v-dialog v-model="dialogMember" max-width="1000">
             <v-card>
-              <v-card-title class="headline">Wählen Sie die Projektteilnehmer aus</v-card-title>
+              <v-card-title class="headline">Wählen Sie die Projektteilnehmer für das Projekt {{projects[index].name}} aus</v-card-title>
               <v-card-text>
-                <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="names" item-value="names" multiple>
+                <v-autocomplete v-model="member[index]" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="names" item-value="names" multiple>
                   <template slot="selection" slot-scope="data">
                     <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
 
@@ -81,7 +81,7 @@
                   </keep-alive>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn icon @click="dialogMember = true">
+                  <v-btn icon @click="openDialogMember(index)">
                     <v-icon>edit</v-icon>
                   </v-btn>
                 </v-list-tile-action>
@@ -110,7 +110,7 @@ export default {
       dialogMember: false,
       header: 'Projekte',
       index: 0,
-      projects: []
+      projects: [{ name: '' }]
     };
   },
   mounted() {
@@ -124,7 +124,7 @@ export default {
         });
       });
       console.log(this.names);
-    }, 100);
+    }, 300);
   },
 
   created() {
@@ -139,24 +139,16 @@ export default {
       .catch(error => console.log(error));
   },
   methods: {
-    getProjectLeader: function(id) {
-      console.log(this.projects);
-      console.log(this.names);
-      const names = [this.projects.length];
-      this.projects.forEach(v => {
-        this.users.forEach(v2 => {
-          if (v2.id === v.memberId) {
-            names.push(v2.name + ', ' + v2.vorname);
-          }
-        });
-      });
-      console.log(names);
-    },
-
     openDialog: function(index) {
       this.dialog = true;
       this.index = index;
-      console.log(index);
+      // console.log(index);
+    },
+
+    openDialogMember: function(index) {
+      this.dialogMember = true;
+      this.index = index;
+      // console.log(index);
     },
 
     deleteProject: function() {
