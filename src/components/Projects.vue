@@ -38,6 +38,38 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="dialogMember" max-width="1000">
+            <v-card>
+              <v-card-title class="headline">Wählen Sie die Projektteilnehmer aus</v-card-title>
+              <v-card-text>
+                <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="names" item-value="names" multiple>
+                  <template slot="selection" slot-scope="data">
+                    <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
+
+                      {{ data.item }}
+                    </v-chip>
+                  </template>
+                  <template slot="item" slot-scope="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                    </template>
+                    <template v-else>
+                      <v-list-tile-content>
+                        <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
+                      </v-list-tile-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn color="green darken-1" flat="flat" @click="dialogMember = false">
+                  Fertig
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-list two-line>
             <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
             <template v-for="(project, index) in projects">
@@ -45,10 +77,14 @@
                 <v-list-tile-content @click="toggle(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
                   <keep-alive>
-                    <v-list-tile-sub-title>{{ getProjectLeader(project.memberId) }} </v-list-tile-sub-title>
+                    <v-list-tile-sub-title>{{ names[index] }} </v-list-tile-sub-title>
                   </keep-alive>
                 </v-list-tile-content>
-
+                <v-list-tile-action>
+                  <v-btn icon @click="dialogMember = true">
+                    <v-icon>edit</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
                 <v-list-tile-action>
                   <v-btn icon @click="openDialog(index)">
                     <v-icon color="red darken-1">delete</v-icon>
@@ -67,30 +103,54 @@
 export default {
   data() {
     return {
+      names: [],
+      users: [],
+      member: [],
       dialog: false,
+      dialogMember: false,
       header: 'Projekte',
       index: 0,
       projects: []
     };
   },
   mounted() {
+    setTimeout(() => {
+      // this.names = [this.projects.length];
+      this.projects.forEach(v => {
+        this.users.forEach(v2 => {
+          if (v2.id === v.memberId) {
+            this.names.push(v2.name + ', ' + v2.vorname);
+          }
+        });
+      });
+      console.log(this.names);
+    }, 100);
+  },
+
+  created() {
     this.getProjects();
+    axios
+      .get(
+        'http://localhost:3000/api/members?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
+      )
+      .then(v => {
+        this.users = v.data;
+      })
+      .catch(error => console.log(error));
   },
   methods: {
     getProjectLeader: function(id) {
-      console.log(id);
-
-      axios
-        .get(
-          'http://localhost:3000/api/members/5b7c2d0727773120d0567caa?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-        )
-        .then(v => {
-          name = v.data.name + ', ' + v.data.vorname;
-        })
-        .catch(error => {
-          console.log(error);
+      console.log(this.projects);
+      console.log(this.names);
+      const names = [this.projects.length];
+      this.projects.forEach(v => {
+        this.users.forEach(v2 => {
+          if (v2.id === v.memberId) {
+            names.push(v2.name + ', ' + v2.vorname);
+          }
         });
-      return name;
+      });
+      console.log(names);
     },
 
     openDialog: function(index) {
@@ -135,6 +195,10 @@ export default {
     toggle: function(index) {
       console.log(this.projects[index]);
       this.$router.push('/addFeedback/' + this.projects[index].id);
+    },
+
+    edit: function(index) {
+      this.$router.push('/edit/' + this.projects[index].id);
     }
   }
 };
