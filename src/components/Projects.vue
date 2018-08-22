@@ -17,25 +17,45 @@
               <v-icon>code</v-icon>
             </v-btn> -->
           </v-toolbar>
+          <v-dialog v-model="dialog" max-width="290">
+            <v-card>
+              <v-card-title class="headline">Wollen Sie das Projekt wirklich löschen?</v-card-title>
 
+              <v-card-text>
+                Gelöschte Projekte können später nicht wieder hergestellt werden!!!
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+
+                <v-btn color="green darken-1" flat="flat" @click="dialog = false">
+                  Nein
+                </v-btn>
+
+                <v-btn color="green darken-1" flat="flat" @click="deleteProject()">
+                  Ja
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <v-list two-line>
             <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
-              <template v-for="(project, index) in projects">
-                <v-list-tile avatar ripple :key="project.id" @click="toggle(index)">
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{ project.name }}</v-list-tile-title>
-                    <keep-alive>
+            <template v-for="(project, index) in projects">
+              <v-list-tile avatar ripple :key="project.id">
+                <v-list-tile-content @click="toggle(index)">
+                  <v-list-tile-title>{{ project.name }}</v-list-tile-title>
+                  <keep-alive>
                     <v-list-tile-sub-title>{{ getProjectLeader(project.memberId) }} </v-list-tile-sub-title>
-                    </keep-alive>
-                  </v-list-tile-content>
+                  </keep-alive>
+                </v-list-tile-content>
 
-                  <v-list-tile-action>
-                    <v-btn icon @click="deleteProject(index)">
-                      <v-icon color="red darken-1">delete</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
-                </v-list-tile>
-              </template>
+                <v-list-tile-action>
+                  <v-btn icon @click="openDialog(index)">
+                    <v-icon color="red darken-1">delete</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+              </v-list-tile>
+            </template>
           </v-list>
         </v-card>
       </v-flex>
@@ -47,7 +67,9 @@
 export default {
   data() {
     return {
+      dialog: false,
       header: 'Projekte',
+      index: 0,
       projects: []
     };
   },
@@ -55,19 +77,6 @@ export default {
     this.getProjects();
   },
   methods: {
-    // add: function() {
-    //   axios
-    //     .post('http://localhost:3000/api/project_groups', {
-    //       name: 'Vue.js',
-    //       memberId: '5b7c2d0727773120d0567caa'
-    //     })
-    //     .then(() => {
-    //       this.projects = [];
-    //       this.getProjects();
-    //     })
-    //     .catch(error => console.log(error));
-    // },
-
     getProjectLeader: function(id) {
       console.log(id);
 
@@ -84,13 +93,19 @@ export default {
       return name;
     },
 
-    deleteProject: function(index) {
+    openDialog: function(index) {
+      this.dialog = true;
+      this.index = index;
+      console.log(index);
+    },
+
+    deleteProject: function() {
       // alert(index);
-      console.log('Lösche Projekt mit der ID: ' + this.projects[index].id);
+      console.log('Lösche Projekt mit der ID: ' + this.projects[this.index].id);
       axios
         .delete(
           'http://localhost:3000/api/project_groups/' +
-            this.projects[index].id +
+            this.projects[this.index].id +
             '/feedbackForm'
         )
         .then(() => {
@@ -100,11 +115,13 @@ export default {
 
       axios
         .delete(
-          'http://localhost:3000/api/project_groups/' + this.projects[index].id
+          'http://localhost:3000/api/project_groups/' +
+            this.projects[this.index].id
         )
         .then(() => {
           this.projects = [];
           this.getProjects();
+          this.dialog = false;
         })
         .catch(error => console.log(error));
     },
