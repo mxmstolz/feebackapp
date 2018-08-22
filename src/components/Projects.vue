@@ -117,6 +117,7 @@ export default {
 
     toggle: function(index) {
       console.log(this.projects[index]);
+      this.$router.push('/addFeedback/' + this.projects[index].id);
     }
   }
 };

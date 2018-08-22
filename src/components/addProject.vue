@@ -113,11 +113,6 @@ export default {
       this.$delete(this.questions, index);
     },
 
-    addMood: function(value) {
-      this.mood = value;
-      console.log(this.comment);
-    },
-
     submit: function() {
       console.log(this.projectName);
       console.log(this.questions);
