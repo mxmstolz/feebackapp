@@ -6,7 +6,7 @@
           <v-toolbar color="blue darken-3" dark>
             <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
 
-            <v-toolbar-title>Dashboard</v-toolbar-title>
+            <v-toolbar-title>Projekte</v-toolbar-title>
 
             <v-spacer></v-spacer>
 
@@ -39,14 +39,11 @@
             </v-card>
           </v-dialog>
           <v-list two-line>
-            <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
-            <template v-for="(project, index) in projects">
-              <v-list-tile ripple :key="project.id + 'admin'" v-show="memberId === project.memberId">
-                <v-list-tile-content @click="toggle(index)">
+            <v-subheader>Projektleiter</v-subheader>
+            <template v-for="(project, index) in myProjects">
+              <v-list-tile ripple :key="project.id + 'admin'">
+                <v-list-tile-content @click="showStatistic(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
-                  <keep-alive>
-                    <v-list-tile-sub-title>{{ names[index] }} </v-list-tile-sub-title>
-                  </keep-alive>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-btn icon @click="edit(index)">
@@ -59,7 +56,10 @@
                   </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
-              <v-list-tile ripple :key="project.id" v-show="memberId != project.memberId">
+            </template>
+            <v-subheader>Projektmitglied</v-subheader>
+            <template v-for="(project, index) in otherProjects2">
+              <v-list-tile ripple :key="project.id">
                 <v-list-tile-content @click="toggle(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
                   <keep-alive>
@@ -67,6 +67,7 @@
                   </keep-alive>
                 </v-list-tile-content>
               </v-list-tile>
+
             </template>
           </v-list>
         </v-card>
@@ -82,27 +83,38 @@ export default {
       names: [],
       users: [],
       dialog: false,
-      header: 'Projekte',
       index: 0,
-      projects: [{ name: '' }],
+      myProjects: [{ name: '' }],
+      otherProjects: [],
+      otherProjects2: [],
       memberId: '5b7c2d0727773120d0567caa'
     };
   },
   mounted() {
     setTimeout(() => {
-      this.projects.forEach(v => {
+      this.otherProjects.forEach(v => {
+        this.otherProjects2.push(v[0]);
+      });
+      this.otherProjects2.forEach(v => {
         this.users.forEach(v2 => {
           if (v2.id === v.memberId) {
             this.names.push(v2.name + ', ' + v2.vorname);
           }
         });
       });
-    }, 300);
+
+      console.log(this.otherProjects2);
+    }, 700);
+    this.otherProjects.forEach(v => {
+      this.otherProjects2.push(v[0]);
+    });
   },
 
   created() {
-    this.getProjects();
+    this.getMyProjects();
+    this.getOtherProjects();
     this.getUsers();
+    console.log('created');
   },
 
   methods: {
@@ -111,12 +123,16 @@ export default {
       this.index = index;
     },
 
+    showStatistic: function() {},
+
     deleteProject: function() {
-      console.log('Lösche Projekt mit der ID: ' + this.projects[this.index].id);
+      console.log(
+        'Lösche Projekt mit der ID: ' + this.myProjects[this.index].id
+      );
       axios
         .delete(
           'http://localhost:3000/api/project_groups/' +
-            this.projects[this.index].id +
+            this.myProjects[this.index].id +
             '/feedbackForm'
         )
         .then(() => {
@@ -127,20 +143,55 @@ export default {
       axios
         .delete(
           'http://localhost:3000/api/project_groups/' +
-            this.projects[this.index].id
+            this.myProjects[this.index].id
         )
         .then(() => {
-          this.projects = [];
-          this.getProjects();
+          this.myProjects = [];
+          this.getMyProjects();
           this.dialog = false;
         })
         .catch(error => console.log(error));
     },
 
-    getProjects: function() {
-      axios.get('http://localhost:3000/api/project_groups').then(v => {
-        this.projects = v.data;
-      });
+    getMyProjects: function() {
+      axios
+        .get(
+          'http://localhost:3000/api/project_groups?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+            this.memberId +
+            '%22%7D%7D'
+        )
+        .then(v => {
+          this.myProjects = v.data;
+        })
+        .catch(error => console.log(error));
+    },
+
+    getOtherProjects: function() {
+      var otherProjects = [];
+      axios
+        .get(
+          'http://localhost:3000/api/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+            this.memberId +
+            '%22%7D%7D&access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
+        )
+        .then(v => {
+          otherProjects = v.data;
+          otherProjects.forEach(v => {
+            axios
+              .get(
+                'http://localhost:3000/api/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
+                  v.projectId +
+                  '%22%7D%7D'
+              )
+              .then(v => {
+                this.otherProjects.push(v.data);
+              })
+              .catch(error => console.log(error));
+          });
+        })
+        .catch(error => console.log(error));
+
+      setTimeout(() => {}, 3000);
     },
 
     getUsers: function() {
@@ -155,17 +206,17 @@ export default {
     },
 
     toggle: function(index) {
-      console.log(this.projects[index]);
-      this.$router.push('/addFeedback/' + this.projects[index].id);
+      // console.log(this.otherProjects2[index]);
+      this.$router.push('/addFeedback/' + this.otherProjects2[index].id);
     },
 
     edit: function(index) {
-      // this.$router.push('/edit/' + this.projects[index].id);
+      // this.$router.push('/edit/' + this.myProjects[index].id);
       this.$router.push({
         name: 'edit',
         params: {
-          id: this.projects[index].id,
-          title: this.projects[index].name
+          id: this.myProjects[index].id,
+          title: this.myProjects[index].name
         }
       });
     }
