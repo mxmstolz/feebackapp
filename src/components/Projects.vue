@@ -38,42 +38,10 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogMember" max-width="1000">
-            <v-card>
-              <v-card-title class="headline">Wählen Sie die Projektteilnehmer für das Projekt {{projects[index].name}} aus</v-card-title>
-              <v-card-text>
-                <v-autocomplete v-model="member[index]" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="names" item-value="names" multiple>
-                  <template slot="selection" slot-scope="data">
-                    <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
-
-                      {{ data.item }}
-                    </v-chip>
-                  </template>
-                  <template slot="item" slot-scope="data">
-                    <template v-if="typeof data.item !== 'object'">
-                      <v-list-tile-content v-text="data.item"></v-list-tile-content>
-                    </template>
-                    <template v-else>
-                      <v-list-tile-content>
-                        <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
-                      </v-list-tile-content>
-                    </template>
-                  </template>
-                </v-autocomplete>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-
-                <v-btn color="green darken-1" flat="flat" @click="dialogMember = false">
-                  Fertig
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
           <v-list two-line>
             <v-subheader v-if="header" :key="header">{{ header }}</v-subheader>
             <template v-for="(project, index) in projects">
-              <v-list-tile avatar ripple :key="project.id">
+              <v-list-tile ripple :key="project.id + 'admin'" v-show="memberId === project.memberId">
                 <v-list-tile-content @click="toggle(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
                   <keep-alive>
@@ -81,7 +49,7 @@
                   </keep-alive>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn icon @click="openDialogMember(index)">
+                  <v-btn icon @click="edit(index)">
                     <v-icon>edit</v-icon>
                   </v-btn>
                 </v-list-tile-action>
@@ -90,6 +58,14 @@
                     <v-icon color="red darken-1">delete</v-icon>
                   </v-btn>
                 </v-list-tile-action>
+              </v-list-tile>
+              <v-list-tile ripple :key="project.id" v-show="memberId != project.memberId">
+                <v-list-tile-content @click="toggle(index)">
+                  <v-list-tile-title>{{ project.name }}</v-list-tile-title>
+                  <keep-alive>
+                    <v-list-tile-sub-title>{{ names[index] }} </v-list-tile-sub-title>
+                  </keep-alive>
+                </v-list-tile-content>
               </v-list-tile>
             </template>
           </v-list>
@@ -105,17 +81,15 @@ export default {
     return {
       names: [],
       users: [],
-      member: [],
       dialog: false,
-      dialogMember: false,
       header: 'Projekte',
       index: 0,
-      projects: [{ name: '' }]
+      projects: [{ name: '' }],
+      memberId: '5b7c2d0727773120d0567caa'
     };
   },
   mounted() {
     setTimeout(() => {
-      // this.names = [this.projects.length];
       this.projects.forEach(v => {
         this.users.forEach(v2 => {
           if (v2.id === v.memberId) {
@@ -123,8 +97,7 @@ export default {
           }
         });
       });
-      console.log(this.names);
-    }, 300);
+    }, 500);
   },
 
   created() {
@@ -142,17 +115,9 @@ export default {
     openDialog: function(index) {
       this.dialog = true;
       this.index = index;
-      // console.log(index);
-    },
-
-    openDialogMember: function(index) {
-      this.dialogMember = true;
-      this.index = index;
-      // console.log(index);
     },
 
     deleteProject: function() {
-      // alert(index);
       console.log('Lösche Projekt mit der ID: ' + this.projects[this.index].id);
       axios
         .delete(
@@ -190,7 +155,14 @@ export default {
     },
 
     edit: function(index) {
-      this.$router.push('/edit/' + this.projects[index].id);
+      // this.$router.push('/edit/' + this.projects[index].id);
+      this.$router.push({
+        name: 'edit',
+        params: {
+          id: this.projects[index].id,
+          title: this.projects[index].name
+        }
+      });
     }
   }
 };

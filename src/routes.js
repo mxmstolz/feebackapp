@@ -9,5 +9,5 @@ export default [
     { path: '/add', component: addProject, meta: { requiresAuth: true } },
     { path: '/login', component: login },
     { path: '/addFeedback/:id', component: Feedback },
-    { path: '/edit/:id', component: editGroup }
+    { path: '/edit/:id', name: 'edit', component: editGroup }
 ]
