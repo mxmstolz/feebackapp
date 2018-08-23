@@ -97,20 +97,14 @@ export default {
           }
         });
       });
-    }, 500);
+    }, 300);
   },
 
   created() {
     this.getProjects();
-    axios
-      .get(
-        'http://localhost:3000/api/members?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-      )
-      .then(v => {
-        this.users = v.data;
-      })
-      .catch(error => console.log(error));
+    this.getUsers();
   },
+
   methods: {
     openDialog: function(index) {
       this.dialog = true;
@@ -147,6 +141,17 @@ export default {
       axios.get('http://localhost:3000/api/project_groups').then(v => {
         this.projects = v.data;
       });
+    },
+
+    getUsers: function() {
+      axios
+        .get(
+          'http://localhost:3000/api/members?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
+        )
+        .then(v => {
+          this.users = v.data;
+        })
+        .catch(error => console.log(error));
     },
 
     toggle: function(index) {
