@@ -57,6 +57,7 @@
                 </v-list-tile-action>
               </v-list-tile>
             </template>
+            <v-divider></v-divider>
             <v-subheader>Projektmitglied</v-subheader>
             <template v-for="(project, index) in otherProjects2">
               <v-list-tile ripple :key="project.id">
@@ -225,4 +226,8 @@ export default {
 </script>
 
 <style scoped>
+.v-subheader {
+  font-size: 18px;
+  color: rgba(0, 150, 136, 0.53);
+}
 </style>
