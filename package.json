@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "es6-promise": "^4.2.4",
     "vue": "^2.5.11",
     "vue-router": "^3.0.1",
-    "vuetify": "^1.1.13"
+    "vuetify": "^1.1.13",
+    "vuex": "^3.0.1"
   },
   "browserslist": [
     "> 1%",

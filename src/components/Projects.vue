@@ -9,7 +9,9 @@
             <v-toolbar-title>Projekte</v-toolbar-title>
 
             <v-spacer></v-spacer>
-
+            <v-btn color=secondary @click="logout">
+              Logout
+            </v-btn>
             <v-btn icon to="/add">
               <v-icon>add</v-icon>
             </v-btn>
@@ -123,6 +125,12 @@ export default {
     openDialog: function(index) {
       this.dialog = true;
       this.index = index;
+    },
+
+    logout: function() {
+      this.$store.dispatch('destroyToken').then(response => {
+        this.$router.push({ name: 'login' });
+      });
     },
 
     showStatistic: function() {},
