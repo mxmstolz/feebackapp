@@ -59,7 +59,7 @@
             </template>
             <v-divider></v-divider>
             <v-subheader>Projektmitglied</v-subheader>
-            <template v-for="(project, index) in otherProjects2">
+            <template v-for="(project, index) in otherProjects2" v-if="namesLoaded">
               <v-list-tile ripple :key="project.id">
                 <v-list-tile-content @click="toggle(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
@@ -88,37 +88,37 @@ export default {
       myProjects: [{ name: '' }],
       otherProjects: [],
       otherProjects2: [],
-      memberId: '5b7c2d0727773120d0567caa'
+      memberId: '5b7c2d0727773120d0567caa',
+      namesLoaded: false
     };
-  },
-  mounted() {
-    setTimeout(() => {
-      this.otherProjects.forEach(v => {
-        this.otherProjects2.push(v[0]);
-      });
-      this.otherProjects2.forEach(v => {
-        this.users.forEach(v2 => {
-          if (v2.id === v.memberId) {
-            this.names.push(v2.name + ', ' + v2.vorname);
-          }
-        });
-      });
-
-      console.log(this.otherProjects2);
-    }, 700);
-    this.otherProjects.forEach(v => {
-      this.otherProjects2.push(v[0]);
-    });
   },
 
   created() {
     this.getMyProjects();
     this.getOtherProjects();
     this.getUsers();
+    // this.getNames();
     console.log('created');
   },
 
   methods: {
+    getNames: function() {
+      this.otherProjects2 = [];
+      this.otherProjects.forEach(v => {
+        this.otherProjects2.push(v[0]);
+      });
+      this.otherProjects2.forEach((v, k) => {
+        this.users.forEach(v2 => {
+          if (v2.id === v.memberId) {
+            this.names.push(v2.name + ', ' + v2.vorname);
+          }
+        });
+        if (k == this.otherProjects2.length - 1) {
+          this.namesLoaded = true;
+        }
+      });
+    },
+
     openDialog: function(index) {
       this.dialog = true;
       this.index = index;
@@ -186,13 +186,12 @@ export default {
               )
               .then(v => {
                 this.otherProjects.push(v.data);
+                this.getNames();
               })
               .catch(error => console.log(error));
           });
         })
         .catch(error => console.log(error));
-
-      setTimeout(() => {}, 3000);
     },
 
     getUsers: function() {
