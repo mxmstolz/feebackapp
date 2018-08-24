@@ -133,7 +133,9 @@ export default {
       });
     },
 
-    showStatistic: function() {},
+    showStatistic: function(index) {
+      this.$router.push('/statistic/' + this.myProjects[index].id);
+    },
 
     deleteProject: function() {
       console.log(
