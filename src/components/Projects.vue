@@ -90,7 +90,7 @@ export default {
       myProjects: [{ name: '' }],
       otherProjects: [],
       otherProjects2: [],
-      memberId: '5b7c2d0727773120d0567caa',
+      memberId: this.$store.state.memberId,
       namesLoaded: false
     };
   },
@@ -141,9 +141,7 @@ export default {
       );
       axios
         .delete(
-          'http://localhost:3000/api/project_groups/' +
-            this.myProjects[this.index].id +
-            '/feedbackForm'
+          '/project_groups/' + this.myProjects[this.index].id + '/feedbackForm'
         )
         .then(() => {
           console.log('FeedbackForm gelöscht');
@@ -151,10 +149,7 @@ export default {
         .catch(error => console.log(error));
 
       axios
-        .delete(
-          'http://localhost:3000/api/project_groups/' +
-            this.myProjects[this.index].id
-        )
+        .delete('/project_groups/' + this.myProjects[this.index].id)
         .then(() => {
           this.myProjects = [];
           this.getMyProjects();
@@ -166,7 +161,7 @@ export default {
     getMyProjects: function() {
       axios
         .get(
-          'http://localhost:3000/api/project_groups?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+          '/project_groups?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
             this.memberId +
             '%22%7D%7D'
         )
@@ -178,18 +173,19 @@ export default {
 
     getOtherProjects: function() {
       var otherProjects = [];
+      // axios.defaults.headers.common['Authorization'] = this.token;
       axios
         .get(
-          'http://localhost:3000/api/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+          '/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
             this.memberId +
-            '%22%7D%7D&access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
+            '%22%7D%7D'
         )
         .then(v => {
           otherProjects = v.data;
           otherProjects.forEach(v => {
             axios
               .get(
-                'http://localhost:3000/api/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
+                '/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
                   v.projectId +
                   '%22%7D%7D'
               )
@@ -205,9 +201,7 @@ export default {
 
     getUsers: function() {
       axios
-        .get(
-          'http://localhost:3000/api/members?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-        )
+        .get('/members')
         .then(v => {
           this.users = v.data;
         })

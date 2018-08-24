@@ -12,6 +12,9 @@ Vue.use(Vuetify);
 Vue.use(VueRouter);
 window.axios = require('axios');
 
+axios.defaults.baseURL = 'http://localhost:3000/api';
+axios.defaults.headers.common['Authorization'] = store.state.token;
+
 const router = new VueRouter({
   mode: 'history',
   routes: Routes,

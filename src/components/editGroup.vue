@@ -42,7 +42,7 @@
         </v-card>
         <!-- // Hier endet das Einfügen -->
         <v-card>
-          <v-btn @click="text">Zeig herr</v-btn>
+          <v-btn color=secondary @click="save">Speichern</v-btn>
         </v-card>
       </v-flex>
     </v-layout>
@@ -55,7 +55,7 @@ export default {
     return {
       id: this.$route.params.id,
       name: this.$route.params.title,
-      memberId: '5b7c2d0727773120d0567caa',
+      memberId: this.$store.state.memberId,
       filter: '',
       users: [],
       member: [],
@@ -73,39 +73,40 @@ export default {
   },
 
   methods: {
-    text: function() {
-      this.member.forEach(v => {
-        if (this.oldMembers.findIndex(f => f === v) < 0) {
-          var name = v.split(', ');
-          var user = this.users.find(
-            fi => fi.name == name[0] && fi.vorname == name[1]
-          );
-          console.log(user.id);
-          this.addMember(user.id);
-        }
-      });
-      this.oldMembers.forEach(v => {
-        if (this.member.findIndex(f => f === v) < 0) {
-          console.log('Mitglied gelöscht' + v);
-          var name = v.split(', ');
-          var user = this.users.find(
-            fi => fi.name == name[0] && fi.vorname == name[1]
-          );
-          console.log(user.id);
-          this.deleteMember(user.id);
-        }
-      });
+    save: function() {
+      if (this.member == this.oldMembers) {
+        console.log('noch immer das selbe');
+      } else {
+        this.member.forEach(v => {
+          if (this.oldMembers.findIndex(f => f === v) < 0) {
+            var name = v.split(', ');
+            var user = this.users.find(
+              fi => fi.name == name[0] && fi.vorname == name[1]
+            );
+            console.log(user.id);
+            this.addMember(user.id);
+          }
+        });
+        this.oldMembers.forEach(v => {
+          if (this.member.findIndex(f => f === v) < 0) {
+            console.log('Mitglied gelöscht' + v);
+            var name = v.split(', ');
+            var user = this.users.find(
+              fi => fi.name == name[0] && fi.vorname == name[1]
+            );
+            console.log(user.id);
+            this.deleteMember(user.id);
+          }
+        });
+      }
     },
 
     addMember: function(memberId) {
       axios
-        .post(
-          'http://localhost:3000/api/groups_users?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf',
-          {
-            projectId: this.id,
-            memberId: memberId
-          }
-        )
+        .post('/groups_users', {
+          projectId: this.id,
+          memberId: memberId
+        })
         .then(v => {
           console.log(v);
         })
@@ -117,11 +118,7 @@ export default {
       setTimeout(() => {
         console.log(this.findId);
         axios
-          .delete(
-            'http://localhost:3000/api/groups_users/' +
-              this.findId +
-              '?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-          )
+          .delete('/groups_users/' + this.findId)
           .then(v => {
             console.log(v);
           })
@@ -132,13 +129,12 @@ export default {
     findProject: function(memberId) {
       axios
         .get(
-          'http://localhost:3000/api/groups_users?filter=' +
+          '/groups_users?filter=' +
             '%7B%22where%22%3A%7B%22projectId%22%3A%22' +
             this.id +
             '%22%2C%22memberId%22%3A%22' +
             memberId +
-            '%22%7D%7D&' +
-            'access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
+            '%22%7D%7D'
         )
         .then(v => {
           this.findId = v.data[0].id;
@@ -149,9 +145,7 @@ export default {
 
     getAllUsers: function() {
       axios
-        .get(
-          'http://localhost:3000/api/members?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-        )
+        .get('/members')
         .then(v => {
           this.users = v.data;
           this.users.forEach(v => {
@@ -168,15 +162,11 @@ export default {
       this.filter =
         '%7B%22include%22%3A%5B%22member%22%5D%2C%22where%22%3A%7B%22projectId%22%3A%22' +
         this.id +
-        '%22%7D%7D&';
+        '%22%7D%7D';
       //   console.log(this.filter);
       var members = [];
       axios
-        .get(
-          'http://localhost:3000/api/groups_users?filter=' +
-            this.filter +
-            'access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf'
-        )
+        .get('/groups_users?filter=' + this.filter)
         .then(v => {
           members = v.data;
           members.forEach(v => {

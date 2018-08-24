@@ -17,7 +17,7 @@
                   <v-text-field v-model="name" :rules="[v => !!v || 'Name ist notwendig']" prepend-icon="person" label="Name" type="text"></v-text-field>
                   <v-text-field v-model="vorname" :rules="[v => !!v || 'Vorname ist notwendig']" prepend-icon="face" label="Vorname" type="text"></v-text-field>
                   <v-text-field v-model="email" :rules="emailRules" prepend-icon="mail" label="E-Mail" type="text"></v-text-field>
-                  <v-text-field v-model="password" :rules="[v => !!v || 'Passwort ist notwendig']" prepend-icon="lock" label="Passwort" type="password"></v-text-field>
+                  <v-text-field v-model="password" @keyup.enter="submit" :rules="[v => !!v || 'Passwort ist notwendig']" prepend-icon="lock" label="Passwort" type="password"></v-text-field>
 
                 </v-form>
               </v-card-text>
