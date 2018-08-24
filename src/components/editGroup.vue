@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex xs12 sm10 md10 offset-sm1>
         <v-card>
-          <v-toolbar color="blue darken-3" dark>
+          <v-toolbar color=primary dark>
             <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
 
             <v-toolbar-title>Projekt {{ name }} bearbeiten</v-toolbar-title>
@@ -144,6 +144,7 @@ export default {
     },
 
     getAllUsers: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
         .get('/members')
         .then(v => {

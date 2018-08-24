@@ -61,8 +61,7 @@ export default {
       projectId: '',
       projectName: '',
       select: null,
-      //   mood: 0,
-      //   comment: '',
+      memberId: this.$store.state.memberId,
       count: 1,
       questions: [{ question: '', option: null }],
       granularity: [4, 6, 8, 10]
@@ -81,9 +80,9 @@ export default {
       console.log(this.projectName);
       console.log(this.questions);
       axios
-        .post('http://localhost:3000/api/project_groups', {
+        .post('/project_groups', {
           name: this.projectName,
-          memberId: '5b7c2d0727773120d0567caa'
+          managerId: this.memberId
         })
         .then(v => {
           this.projectId = v.data.id;
@@ -95,16 +94,14 @@ export default {
     },
 
     postQuestions: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       this.questions.forEach(v => {
         axios
-          .post(
-            'http://localhost:3000/api/feedback_questions?access_token=qNKF41zqYTTDNYi5JpLAcC9fecKU62WlGf4RgKWXek9Uy6YK15eQ5pfSNYz5DUYf',
-            {
-              question: v.question,
-              granularity: v.option,
-              projectGroupId: this.projectId
-            }
-          )
+          .post('/feedback_questions', {
+            question: v.question,
+            granularity: v.option,
+            projectGroupId: this.projectId
+          })
           .then(v => {
             console.log(v);
             //   console.log('ID ist: ' + this.projectId);

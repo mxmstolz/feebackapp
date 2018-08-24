@@ -3,7 +3,7 @@
         <!-- <v-layout justify-start column fill-height> -->
         <v-layout>
             <v-flex xs12 sm10 offset-sm1 md10>
-                <v-toolbar color="blue darken-3" dark>
+                <v-toolbar color=primary dark>
                     <v-toolbar-title>Feedback für {{ name }} abgeben</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn icon to="/">

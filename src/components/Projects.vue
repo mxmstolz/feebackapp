@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex xs12 sm10 md10 offset-sm1>
         <v-card>
-          <v-toolbar color="blue darken-3" dark>
+          <v-toolbar color=primary dark>
             <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
 
             <v-toolbar-title>Projekte</v-toolbar-title>
@@ -112,7 +112,7 @@ export default {
       });
       this.otherProjects2.forEach((v, k) => {
         this.users.forEach(v2 => {
-          if (v2.id === v.memberId) {
+          if (v2.id === v.managerId) {
             this.names.push(v2.name + ', ' + v2.vorname);
           }
         });
@@ -161,19 +161,21 @@ export default {
     getMyProjects: function() {
       axios
         .get(
-          '/project_groups?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+          '/project_groups?filter=%7B%22where%22%3A%7B%22managerId%22%3A%22' +
             this.memberId +
             '%22%7D%7D'
         )
         .then(v => {
           this.myProjects = v.data;
+          console.log(v.data);
         })
         .catch(error => console.log(error));
     },
 
     getOtherProjects: function() {
+      axios.defaults.headers.common['Authorization'] = this.token;
       var otherProjects = [];
-      // axios.defaults.headers.common['Authorization'] = this.token;
+      this.otherProjects = [];
       axios
         .get(
           '/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
@@ -200,6 +202,7 @@ export default {
     },
 
     getUsers: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
         .get('/members')
         .then(v => {
