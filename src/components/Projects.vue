@@ -104,6 +104,7 @@ export default {
   methods: {
     getNames: function() {
       this.otherProjects2 = [];
+      this.names = [];
       this.otherProjects.forEach(v => {
         this.otherProjects2.push(v[0]);
       });
