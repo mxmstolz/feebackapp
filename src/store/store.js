@@ -25,7 +25,6 @@ export const store = new Vuex.Store({
         getAvgMood(state) {
             state.weeks = []
             state.sumMood = new Array();
-            var sumMood = [];
             var oldWeek = 0;
             var newWeek = 0;
             var index = 0;
@@ -36,7 +35,6 @@ export const store = new Vuex.Store({
                 state.weeks.push(oldWeek)
                 state.sumMood.push(0);
             }
-            // var prom = new Promise((resolve, reject) => {
             state.feedback.forEach((v, k, arr) => {
                 newWeek = getWeek(v.createdAt);
                 if (newWeek == oldWeek) {
@@ -55,12 +53,6 @@ export const store = new Vuex.Store({
                 }
 
             })
-            // });
-            // prom.then(() => {
-            //     // console.log(counter)
-            //     state.sumMood[(state.sumMood.length - 1)] = state.sumMood[(state.sumMood.length - 1)] / counter;
-            //     console.log(state.sumMood)
-            // })
 
         },
         retrieveToken(state, token) {
