@@ -134,7 +134,14 @@ export default {
     },
 
     showStatistic: function(index) {
-      this.$router.push('/statistic/' + this.myProjects[index].id);
+      // this.$router.push('/statistic/' + this.myProjects[index].id);
+      this.$router.push({
+        name: 'statistic',
+        params: {
+          id: this.myProjects[index].id,
+          title: this.myProjects[index].name
+        }
+      });
     },
 
     deleteProject: function() {

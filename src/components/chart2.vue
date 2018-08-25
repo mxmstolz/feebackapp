@@ -1,5 +1,5 @@
 <template>
-    <canvas id="myChart"></canvas>
+  <canvas id="myChart"></canvas>
 </template>
 
 <script>
@@ -16,21 +16,13 @@ export default {
 
       // The data for our dataset
       data: {
-        labels: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July'
-        ],
+        labels: this.$store.state.weeks,
         datasets: [
           {
-            label: 'My First dataset',
+            label: 'Durchschnittszufriedenheit',
             // backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(155, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45]
+            data: this.$store.state.sumMood
           }
         ]
       },
