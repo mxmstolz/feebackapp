@@ -175,7 +175,7 @@ export default {
     },
 
     getOtherProjects: function() {
-      axios.defaults.headers.common['Authorization'] = this.token;
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       var otherProjects = [];
       this.otherProjects = [];
       axios
