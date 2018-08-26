@@ -17,11 +17,18 @@
             </v-btn>
           </v-toolbar>
         </v-card>
-        <!-- <v-card>
-                    <chart1></chart1>
-                </v-card> -->
         <v-card>
-          <chart2 :options="{responsive: false, maintainAspectRatio: false}">
+          <v-card-title>
+            <v-select v-model="question" :items="questions" @change="change" label="Wähle eine Frage aus" outline></v-select>
+          </v-card-title>
+          <!-- <chart1></chart1> -->
+        </v-card>
+        <v-card v-if="selected">
+          <chart1 :weeks="weeks" :avgRating="avgRating" :key="question">
+          </chart1>
+        </v-card>
+        <v-card>
+          <chart2>
           </chart2>
         </v-card>
       </v-flex>
@@ -30,7 +37,7 @@
 </template>
 
 <script>
-import chart1 from './chart1';
+import chart1 from './chart1.vue';
 import chart2 from './chart2.vue';
 
 export default {
@@ -41,7 +48,9 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      title: this.$route.params.title
+      title: this.$route.params.title,
+      question: '',
+      selected: false
     };
   },
   created() {
@@ -50,14 +59,30 @@ export default {
       .then(response => {
         // console.log(this.$store.state.feedback);
         this.$store.commit('getAvgMood');
+
         console.log(this.$store.state.weeks);
       })
       .catch(error => alert(error));
   },
 
-  methods: {},
+  methods: {
+    change: function() {
+      this.$store.commit('getAvgRating', this.questions.indexOf(this.question));
+      this.selected = true;
+    }
+  },
 
-  computed: {}
+  computed: {
+    questions() {
+      return this.$store.state.questions;
+    },
+    weeks() {
+      return this.$store.state.weeks;
+    },
+    avgRating() {
+      return this.$store.state.avgRating;
+    }
+  }
 };
 </script>
 

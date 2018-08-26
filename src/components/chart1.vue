@@ -1,5 +1,5 @@
 <template>
-  <canvas id="myChart"></canvas>
+    <canvas id="myChart"></canvas>
 </template>
 
 <script>
@@ -8,18 +8,8 @@ import { Bar, Line } from 'vue-chartjs';
 export default {
   extends: Line,
   Bar,
-  props: ['data', 'options'],
-  computed: {
-    weeks() {
-      return this.$store.state.weeks;
-    },
-    avgMood() {
-      return this.$store.state.avgMood;
-    }
-  },
-  // data: {
-  //   weeks: this.$store.state.weeks
-  // },
+  props: ['weeks', 'avgRating'],
+  computed: {},
   mounted() {
     var ctx = document.getElementById('myChart').getContext('2d');
     var chart = new Chart(ctx, {
@@ -31,20 +21,16 @@ export default {
         labels: this.weeks.slice(this.weeks.length - 10),
         datasets: [
           {
-            label: 'Durchschnittszufriedenheit',
+            label: 'Durchschnittsrating',
             // backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(155, 99, 132)',
-            data: this.avgMood.slice(this.avgMood.length - 10)
+            data: this.avgRating.slice(this.avgRating.length - 10)
           }
         ]
       },
 
       // Configuration options go here
       options: {
-        title: {
-          display: true,
-          text: 'Stimmungsbarometer'
-        },
         scales: {
           xAxes: [
             {
@@ -58,10 +44,10 @@ export default {
             {
               scaleLabel: {
                 display: true,
-                labelString: '(0 : sehr unzufrieden  --  4 : sehr zufrieden)'
+                labelString: 'Rating'
               },
               ticks: {
-                max: 4,
+                max: 8,
                 beginAtZero: true
               }
             }

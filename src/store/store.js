@@ -11,8 +11,10 @@ export const store = new Vuex.Store({
         token: localStorage.getItem('access_token') || null,
         memberId: localStorage.getItem('memberId') || null,
         feedback: '',
-        sumMood: [],
-        weeks: []
+        avgMood: [],
+        avgRating: [],
+        weeks: [],
+        questions: []
     },
     getters: {
         loggedIn(state) {
@@ -22,9 +24,47 @@ export const store = new Vuex.Store({
 
     },
     mutations: {
+        getAvgRating(state, id) {
+            state.weeks = []
+            state.avgRating = new Array();
+            var oldWeek = 0;
+            var newWeek = 0;
+            var index = 0;
+            var counter = 0;
+            var question = [];
+            if (state.feedback != null) {
+                oldWeek = getWeek(state.feedback[0].createdAt);
+                newWeek = oldWeek;
+                state.weeks.push(oldWeek)
+                state.avgRating.push(0);
+            }
+            state.feedback.forEach((v, k, arr) => {
+                newWeek = getWeek(v.createdAt);
+                if (newWeek == oldWeek) {
+                    question = v.questions[id];
+                    state.avgRating[index] += question.rating;
+                    counter++;
+                } else {
+                    state.avgRating[index] = state.avgRating[index] / counter;
+                    counter = 1;
+                    question = v.questions[id];
+                    state.avgRating.push(question.rating);
+                    oldWeek = newWeek;
+                    state.weeks.push(oldWeek)
+                    index++;
+                }
+                if (k === arr.length - 1) {
+                    // state.avgMood[(state.avgMood.length - 1)] = state.avgMood[(state.avgMood.length - 1)] / counter;
+                    state.avgRating[(state.avgRating.length - 1)] = state.avgRating[(state.avgRating.length - 1)] / counter;
+                }
+
+            })
+
+        },
+
         getAvgMood(state) {
             state.weeks = []
-            state.sumMood = new Array();
+            state.avgMood = new Array();
             var oldWeek = 0;
             var newWeek = 0;
             var index = 0;
@@ -33,23 +73,23 @@ export const store = new Vuex.Store({
                 oldWeek = getWeek(state.feedback[0].createdAt);
                 newWeek = oldWeek;
                 state.weeks.push(oldWeek)
-                state.sumMood.push(0);
+                state.avgMood.push(0);
             }
             state.feedback.forEach((v, k, arr) => {
                 newWeek = getWeek(v.createdAt);
                 if (newWeek == oldWeek) {
-                    state.sumMood[index] += v.mood;
+                    state.avgMood[index] += v.mood;
                     counter++;
                 } else {
-                    state.sumMood[index] = state.sumMood[index] / counter;
+                    state.avgMood[index] = state.avgMood[index] / counter;
                     counter = 1;
-                    state.sumMood.push(v.mood);
+                    state.avgMood.push(v.mood);
                     oldWeek = newWeek;
                     state.weeks.push(oldWeek)
                     index++;
                 }
                 if (k === arr.length - 1) {
-                    state.sumMood[(state.sumMood.length - 1)] = state.sumMood[(state.sumMood.length - 1)] / counter;
+                    state.avgMood[(state.avgMood.length - 1)] = state.avgMood[(state.avgMood.length - 1)] / counter;
                 }
 
             })
@@ -68,7 +108,14 @@ export const store = new Vuex.Store({
             state.memberId = null
         },
         retrieveFeedback(state, feedback) {
-            state.feedback = feedback
+            state.feedback = feedback;
+            var questions = [];
+            if (state.feedback != null) {
+                questions = state.feedback[0].questions;
+                questions.forEach(v => {
+                    state.questions.push(v.question)
+                })
+            }
         },
 
 
