@@ -33,7 +33,7 @@ export default {
           {
             label: 'Durchschnittszufriedenheit',
             // backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(155, 99, 132)',
+            borderColor: '#00838F',
             data: this.avgMood.slice(this.avgMood.length - 10)
           }
         ]

@@ -23,7 +23,7 @@ export default {
           {
             label: 'Durchschnittsrating',
             // backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(155, 99, 132)',
+            borderColor: '#42A5F5',
             data: this.avgRating.slice(this.avgRating.length - 10)
           }
         ]
@@ -45,11 +45,11 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: 'Rating'
-              },
-              ticks: {
-                max: 8,
-                beginAtZero: true
               }
+              //   ticks: {
+              //     max: 8,
+              //     beginAtZero: true
+              //   }
             }
           ]
         }
