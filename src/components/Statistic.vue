@@ -31,6 +31,26 @@
           <chart2>
           </chart2>
         </v-card>
+        <v-card>
+          <v-card-text>
+            <v-textarea outline readonly name="comment" label="Kommentare" v-model="comments[index]"></v-textarea>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color=secondary @click="index--" v-if="index > 0">
+              vorheriger Kommentar
+            </v-btn>
+            <v-btn color=secondary v-else disabled="">
+              vorheriger Kommentar
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color=secondary @click="index++" v-if="index < commentsLength">
+              nächster Kommentar
+            </v-btn>
+            <v-btn color=secondary v-else disabled="">
+              nächster Kommentar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -50,7 +70,9 @@ export default {
       id: this.$route.params.id,
       title: this.$route.params.title,
       question: '',
-      selected: false
+      selected: false,
+      index: 0,
+      commentsLength: 0
     };
   },
   created() {
@@ -59,8 +81,9 @@ export default {
       .then(response => {
         // console.log(this.$store.state.feedback);
         this.$store.commit('getAvgMood');
-
-        console.log(this.$store.state.weeks);
+        this.$store.commit('getComments');
+        this.commentsLength = this.comments.length - 1;
+        this.index = this.commentsLength;
       })
       .catch(error => alert(error));
   },
@@ -81,6 +104,9 @@ export default {
     },
     avgRating() {
       return this.$store.state.avgRating;
+    },
+    comments() {
+      return this.$store.state.comments;
     }
   }
 };

@@ -14,7 +14,8 @@ export const store = new Vuex.Store({
         avgMood: [],
         avgRating: [],
         weeks: [],
-        questions: []
+        questions: [],
+        comments: []
     },
     getters: {
         loggedIn(state) {
@@ -95,6 +96,16 @@ export const store = new Vuex.Store({
             })
 
         },
+
+        getComments(state) {
+            state.comments = []
+            state.feedback.forEach(v => {
+                if (v.comment != '') {
+                    state.comments.push(v.comment)
+                }
+            })
+        },
+
         retrieveToken(state, token) {
             state.token = token
         },
@@ -108,6 +119,7 @@ export const store = new Vuex.Store({
             state.memberId = null
         },
         retrieveFeedback(state, feedback) {
+            state.questions = [];
             state.feedback = feedback;
             var questions = [];
             if (state.feedback != null) {
