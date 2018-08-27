@@ -10,45 +10,48 @@
                         <v-icon>close</v-icon>
                     </v-btn>
                 </v-toolbar>
-                <v-card>
-                    <v-card-title>
-                        <v-text-field outline required v-model="projectName" label="Projektname" type="text"></v-text-field>
-                    </v-card-title>
-                </v-card>
-                <!-- <v-divider></v-divider> -->
-                <v-card v-for="(question, index) in questions" :key="index">
-                    <!-- <v-card-text> -->
-                    <v-container>
-                        <v-layout align-start justify-start row fill-height wrap>
-                            <!-- <v-form> -->
-                            <v-flex xs12 sm6 md9>
-                                <v-text-field required v-model="question.question" label="Frage" type="text"></v-text-field>
-                            </v-flex>
-                            <!-- <v-spacer></v-spacer> -->
-                            <v-flex xs12 sm6 md2>
-                                <v-select v-model="question.option" :items="granularity" label="Granularität" required></v-select>
-                            </v-flex>
-                            <v-flex>
-                                <v-btn icon @click="deleteQuestion(index)">
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-flex>
-                            <!-- </v-form> -->
-                        </v-layout>
-                    </v-container>
-                    <v-divider></v-divider>
-                </v-card>
-                <v-card>
-                    <v-card-actions>
-                        <!-- Weitere Frage hinzufügen -->
-                        <v-btn color=secondary @click="add">
-                            Weitere Frage hinzufügen
-                            <v-icon>add</v-icon>
-                        </v-btn>
-                        <v-spacer></v-spacer>
-                        <v-btn color=primary @click="submit">Fragebogen erstellen</v-btn>
-                    </v-card-actions>
-                </v-card>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-card>
+                        <v-card-title>
+                            <v-text-field :rules="[v => !!v || 'Es muss ein Projektname angegeben werden']" outline required v-model="projectName" label="Projektname" type="text"></v-text-field>
+                        </v-card-title>
+                    </v-card>
+                    <!-- <v-divider></v-divider> -->
+
+                    <v-card v-for="(question, index) in questions" :key="index">
+                        <!-- <v-card-text> -->
+                        <v-container>
+                            <v-layout align-start justify-start row fill-height wrap>
+                                <!-- <v-form> -->
+                                <v-flex xs12 sm6 md9>
+                                    <v-text-field :rules="[v => !!v || 'Es muss eine Frage angegeben werden']" required v-model="question.question" label="Frage" type="text"></v-text-field>
+                                </v-flex>
+                                <!-- <v-spacer></v-spacer> -->
+                                <v-flex xs12 sm6 md2>
+                                    <v-select :rules="[v => !!v || 'Es muss eine Granularität ausgewählt werden']" v-model="question.option" :items="granularity" label="Granularität" required></v-select>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn icon @click="deleteQuestion(index)">
+                                        <v-icon>delete</v-icon>
+                                    </v-btn>
+                                </v-flex>
+                                <!-- </v-form> -->
+                            </v-layout>
+                        </v-container>
+                        <v-divider></v-divider>
+                    </v-card>
+                    <v-card>
+                        <v-card-actions>
+                            <!-- Weitere Frage hinzufügen -->
+                            <v-btn color=secondary @click="add">
+                                Weitere Frage hinzufügen
+                                <v-icon>add</v-icon>
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color=primary @click="submit">Fragebogen erstellen</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-form>
             </v-flex>
         </v-layout>
     </v-container>
@@ -58,6 +61,7 @@
 export default {
   data() {
     return {
+      valid: true,
       projectId: '',
       projectName: '',
       select: null,
@@ -77,20 +81,22 @@ export default {
     },
 
     submit: function() {
-      console.log(this.projectName);
-      console.log(this.questions);
-      axios
-        .post('/project_groups', {
-          name: this.projectName,
-          managerId: this.memberId
-        })
-        .then(v => {
-          this.projectId = v.data.id;
-          this.postQuestions();
-          this.$router.push('/');
-          //   console.log('ID ist: ' + this.projectId);
-        })
-        .catch(error => console.log(error));
+      if (this.$refs.form.validate()) {
+        console.log(this.projectName);
+        console.log(this.questions);
+        axios
+          .post('/project_groups', {
+            name: this.projectName,
+            managerId: this.memberId
+          })
+          .then(v => {
+            this.projectId = v.data.id;
+            this.postQuestions();
+            this.$router.push('/');
+            //   console.log('ID ist: ' + this.projectId);
+          })
+          .catch(error => console.log(error));
+      }
     },
 
     postQuestions: function() {
