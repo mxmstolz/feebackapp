@@ -56,8 +56,7 @@ export default {
       users: [],
       member: [],
       oldMembers: [],
-      names: [],
-      findId: ''
+      names: []
     };
   },
 
@@ -65,7 +64,6 @@ export default {
     this.getAllUsers(); //get every User to select non-member User
     this.getAllMember(); //get every member of the project
     this.member = this.oldMembers;
-    console.log(this.member);
   },
 
   methods: {
@@ -115,34 +113,36 @@ export default {
     // delete a member to the project
     deleteMember: function(memberId) {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
-      this.findProject(memberId);
-      setTimeout(() => {
-        console.log(this.findId);
-        axios
-          .delete('/groups_users/' + this.findId)
-          .then(v => {
-            console.log(v);
-          })
-          .catch(error => console.log(error));
-      }, 500);
+      this.findProject(memberId)
+        .then(response => {
+          axios
+            .delete('/groups_users/' + response)
+            .then(v => {
+              console.log(v);
+            })
+            .catch(error => console.log(error));
+        })
+        .catch(error => console.log(error));
     },
 
     // find id of a project
     findProject: function(memberId) {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
-      axios
-        .get(
-          '/groups_users?filter=' +
-            '%7B%22where%22%3A%7B%22projectId%22%3A%22' +
-            this.id +
-            '%22%2C%22memberId%22%3A%22' +
-            memberId +
-            '%22%7D%7D'
-        )
-        .then(v => {
-          this.findId = v.data[0].id;
-        })
-        .catch(error => console.log(error));
+      return new Promise((resolve, reject) => {
+        axios
+          .get(
+            '/groups_users?filter=' +
+              '%7B%22where%22%3A%7B%22projectId%22%3A%22' +
+              this.id +
+              '%22%2C%22memberId%22%3A%22' +
+              memberId +
+              '%22%7D%7D'
+          )
+          .then(v => {
+            resolve(v.data[0].id);
+          })
+          .catch(error => reject(error));
+      });
     },
 
     // get all Users aviable
