@@ -1,6 +1,5 @@
 <template>
     <v-container fluid fill-height>
-        <!-- <v-layout justify-start column fill-height> -->
         <v-layout>
             <v-flex xs12 sm10 offset-sm1 md10>
                 <v-toolbar color=primary dark>
@@ -57,15 +56,15 @@
 
 <script>
 export default {
+  // get the feedbackForm of the projectgroup
   created() {
+    axios.defaults.headers.common['Authorization'] = this.$store.state.token;
     axios
       .get('http://localhost:3000/api/project_groups/' + this.id)
       .then(v => {
-        // console.log(v);
         this.name = v.data.name;
         this.questions = v.data.feedbackForm;
         this.radioGroup.push(0);
-        // console.log(this.questions);
       })
       .catch(error => console.log(error));
   },
@@ -78,7 +77,7 @@ export default {
       mood: 0,
       name: '',
       questions: [],
-      valid: true,
+      valid: false,
       moodSelected: false
     };
   },
@@ -88,7 +87,9 @@ export default {
       this.moodSelected = true;
     },
 
+    // validate and commit the feedback
     submit: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       if (this.$refs.form.validate() && this.moodSelected) {
         const questions = [];
         for (let index = 0; index < this.questions.length; index++) {

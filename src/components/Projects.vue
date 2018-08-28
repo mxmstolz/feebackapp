@@ -99,8 +99,6 @@ export default {
     this.getMyProjects();
     this.getOtherProjects();
     this.getUsers();
-    // this.getNames();
-    console.log('created');
   },
 
   methods: {
@@ -134,7 +132,6 @@ export default {
     },
 
     showStatistic: function(index) {
-      // this.$router.push('/statistic/' + this.myProjects[index].id);
       this.$router.push({
         name: 'statistic',
         params: {
@@ -145,6 +142,7 @@ export default {
     },
 
     deleteProject: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       console.log(
         'Lösche Projekt mit der ID: ' + this.myProjects[this.index].id
       );
@@ -168,6 +166,7 @@ export default {
     },
 
     getMyProjects: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
         .get(
           '/project_groups?filter=%7B%22where%22%3A%7B%22managerId%22%3A%22' +
@@ -176,7 +175,6 @@ export default {
         )
         .then(v => {
           this.myProjects = v.data;
-          console.log(v.data);
         })
         .catch(error => console.log(error));
     },
@@ -221,12 +219,10 @@ export default {
     },
 
     toggle: function(index) {
-      // console.log(this.otherProjects2[index]);
       this.$router.push('/addFeedback/' + this.otherProjects2[index].id);
     },
 
     edit: function(index) {
-      // this.$router.push('/edit/' + this.myProjects[index].id);
       this.$router.push({
         name: 'edit',
         params: {
@@ -242,6 +238,6 @@ export default {
 <style scoped>
 .v-subheader {
   font-size: 18px;
-  color: rgba(0, 150, 136, 0.53);
+  color: rgba(3, 169, 244, 0.53);
 }
 </style>

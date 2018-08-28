@@ -4,14 +4,8 @@
       <v-flex xs12 sm10 md10 offset-sm1>
         <v-card>
           <v-toolbar color=primary dark>
-            <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
-
             <v-toolbar-title>Statistiken des Projekts {{ title }}</v-toolbar-title>
-
             <v-spacer></v-spacer>
-            <!-- <v-btn color=secondary @click="logout">
-                            Logout
-                        </v-btn> -->
             <v-btn icon to="/">
               <v-icon>keyboard_arrow_left</v-icon>
             </v-btn>
@@ -21,7 +15,6 @@
           <v-card-title>
             <v-select v-model="question" :items="questions" @change="change" label="Wähle eine Frage aus" outline></v-select>
           </v-card-title>
-          <!-- <chart1></chart1> -->
         </v-card>
         <v-card v-if="selected">
           <chart1 :weeks="weeks" :avgRating="avgRating" :key="question">
@@ -75,6 +68,8 @@ export default {
       commentsLength: 0
     };
   },
+
+  // get avgMood and comments from the store
   created() {
     this.$store
       .dispatch('retrieveFeedback', this.id)
@@ -89,6 +84,7 @@ export default {
   },
 
   methods: {
+    // if a question selected, get its avgRating
     change: function() {
       this.$store.commit('getAvgRating', this.questions.indexOf(this.question));
       this.selected = true;

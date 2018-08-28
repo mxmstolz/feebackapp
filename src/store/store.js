@@ -25,6 +25,7 @@ export const store = new Vuex.Store({
 
     },
     mutations: {
+        // function to get the avg rating per week
         getAvgRating(state, id) {
             state.weeks = []
             state.avgRating = new Array();
@@ -63,6 +64,7 @@ export const store = new Vuex.Store({
 
         },
 
+        // function to get the avg mood per week
         getAvgMood(state) {
             state.weeks = []
             state.avgMood = new Array();
@@ -97,6 +99,7 @@ export const store = new Vuex.Store({
 
         },
 
+        // function to get all non-empty comments from a project
         getComments(state) {
             state.comments = []
             state.feedback.forEach(v => {
@@ -118,6 +121,7 @@ export const store = new Vuex.Store({
         destroyMemberId(state) {
             state.memberId = null
         },
+        // function to retrieve Feedback and get the questions of a feedback bow
         retrieveFeedback(state, feedback) {
             state.questions = [];
             state.feedback = feedback;
@@ -133,6 +137,7 @@ export const store = new Vuex.Store({
 
     },
     actions: {
+        // function to register a new User
         register(context, data) {
             return new Promise((resolve, reject) => {
                 axios.post('/members', {
@@ -149,6 +154,7 @@ export const store = new Vuex.Store({
                     })
             })
         },
+        // destory token after a User logged out
         destroyToken(context) {
             axios.defaults.headers.common['Authorization'] = context.state.token
 
@@ -174,6 +180,7 @@ export const store = new Vuex.Store({
                 })
             }
         },
+        // log in an save the token and memberId
         retrieveToken(context, credentials) {
             return new Promise((resolve, reject) => {
                 axios.post('/members/login', {
@@ -193,11 +200,12 @@ export const store = new Vuex.Store({
                         // context.commit('addTodo', response.data)
                     })
                     .catch(error => {
-                        console.log(error)
+                        console.log(error.response);
                         reject(error)
                     })
             })
         },
+        // get all the feedback of a single project
         retrieveFeedback(context, id) {
             return new Promise((resolve, reject) => {
                 axios.defaults.headers.common[

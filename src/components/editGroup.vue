@@ -4,8 +4,6 @@
       <v-flex xs12 sm10 md10 offset-sm1>
         <v-card>
           <v-toolbar color=primary dark>
-            <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
-
             <v-toolbar-title>Projekt {{ name }} bearbeiten</v-toolbar-title>
 
             <v-spacer></v-spacer>
@@ -16,7 +14,6 @@
 
           </v-toolbar>
         </v-card>
-        <!-- // hier beginnt das einfügen -->
         <v-card>
           <v-card-text>
             <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="name" item-value="name" multiple>
@@ -40,7 +37,6 @@
           </v-card-text>
 
         </v-card>
-        <!-- // Hier endet das Einfügen -->
         <v-card>
           <v-btn color=secondary @click="save">Speichern</v-btn>
         </v-card>
@@ -66,13 +62,14 @@ export default {
   },
 
   created() {
-    this.getAllUsers();
-    this.getAllMember();
+    this.getAllUsers(); //get every User to select non-member User
+    this.getAllMember(); //get every member of the project
     this.member = this.oldMembers;
     console.log(this.member);
   },
 
   methods: {
+    // function to find new added or deleted users
     save: function() {
       if (this.member == this.oldMembers) {
         console.log('noch immer das selbe');
@@ -101,7 +98,9 @@ export default {
       }
     },
 
+    // add a member to the project
     addMember: function(memberId) {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
         .post('/groups_users', {
           projectId: this.id,
@@ -113,7 +112,9 @@ export default {
         .catch(error => console.log(error));
     },
 
+    // delete a member to the project
     deleteMember: function(memberId) {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       this.findProject(memberId);
       setTimeout(() => {
         console.log(this.findId);
@@ -126,7 +127,9 @@ export default {
       }, 500);
     },
 
+    // find id of a project
     findProject: function(memberId) {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
         .get(
           '/groups_users?filter=' +
@@ -138,11 +141,11 @@ export default {
         )
         .then(v => {
           this.findId = v.data[0].id;
-          //   console.log(v.data[0].id);
         })
         .catch(error => console.log(error));
     },
 
+    // get all Users aviable
     getAllUsers: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
@@ -151,20 +154,21 @@ export default {
           this.users = v.data;
           this.users.forEach(v => {
             if (v.id != this.memberId) {
+              //don't add the own name to the lost
               this.names.push(v.name + ', ' + v.vorname);
             }
-            // this.names.push(v.name + ', ' + v.vorname);
           });
         })
         .catch(error => console.log(error));
     },
 
+    // get all members of a project
     getAllMember: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       this.filter =
         '%7B%22include%22%3A%5B%22member%22%5D%2C%22where%22%3A%7B%22projectId%22%3A%22' +
         this.id +
         '%22%7D%7D';
-      //   console.log(this.filter);
       var members = [];
       axios
         .get('/groups_users?filter=' + this.filter)

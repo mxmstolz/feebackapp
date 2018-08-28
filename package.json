@@ -1,8 +1,8 @@
 {
-  "name": "vuejstut",
-  "description": "A Vue.js project",
+  "name": "FeedbackApp",
+  "description": "Eine App um Feedback zu erhalten",
   "version": "1.0.0",
-  "author": "Maximilian <mxmstolz@gmail.com>",
+  "author": "Maximilian Stolz <mxmstolz@gmail.com>",
   "license": "MIT",
   "private": true,
   "scripts": {

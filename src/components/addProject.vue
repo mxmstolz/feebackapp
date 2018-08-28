@@ -1,6 +1,5 @@
 <template>
     <v-container fluid fill-height>
-        <!-- <v-layout justify-start column fill-height> -->
         <v-layout>
             <v-flex xs12 sm10 offset-sm1 md10>
                 <v-toolbar color="blue darken-3" dark>
@@ -16,17 +15,12 @@
                             <v-text-field :rules="[v => !!v || 'Es muss ein Projektname angegeben werden']" outline required v-model="projectName" label="Projektname" type="text"></v-text-field>
                         </v-card-title>
                     </v-card>
-                    <!-- <v-divider></v-divider> -->
-
                     <v-card v-for="(question, index) in questions" :key="index">
-                        <!-- <v-card-text> -->
                         <v-container>
                             <v-layout align-start justify-start row fill-height wrap>
-                                <!-- <v-form> -->
                                 <v-flex xs12 sm6 md9>
                                     <v-text-field :rules="[v => !!v || 'Es muss eine Frage angegeben werden']" required v-model="question.question" label="Frage" type="text"></v-text-field>
                                 </v-flex>
-                                <!-- <v-spacer></v-spacer> -->
                                 <v-flex xs12 sm6 md2>
                                     <v-select :rules="[v => !!v || 'Es muss eine Granularität ausgewählt werden']" v-model="question.option" :items="granularity" label="Granularität" required></v-select>
                                 </v-flex>
@@ -35,7 +29,6 @@
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </v-flex>
-                                <!-- </v-form> -->
                             </v-layout>
                         </v-container>
                         <v-divider></v-divider>
@@ -61,7 +54,7 @@
 export default {
   data() {
     return {
-      valid: true,
+      valid: false,
       projectId: '',
       projectName: '',
       select: null,
@@ -72,18 +65,20 @@ export default {
     };
   },
   methods: {
+    //   add new questionrow
     add: function() {
       this.questions.push({ question: '', option: null });
     },
 
+    // delete questionrow
     deleteQuestion: function(index) {
       this.$delete(this.questions, index);
     },
 
+    // validate the form and create a new project
     submit: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       if (this.$refs.form.validate()) {
-        console.log(this.projectName);
-        console.log(this.questions);
         axios
           .post('/project_groups', {
             name: this.projectName,
@@ -93,12 +88,12 @@ export default {
             this.projectId = v.data.id;
             this.postQuestions();
             this.$router.push('/');
-            //   console.log('ID ist: ' + this.projectId);
           })
           .catch(error => console.log(error));
       }
     },
 
+    // create the feedbackbow
     postQuestions: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       this.questions.forEach(v => {
@@ -110,7 +105,6 @@ export default {
           })
           .then(v => {
             console.log(v);
-            //   console.log('ID ist: ' + this.projectId);
           })
           .catch(error => console.log(error));
       });

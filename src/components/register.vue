@@ -49,6 +49,7 @@ export default {
     password: ''
   }),
   methods: {
+    // validate form and register a new user
     submit() {
       if (this.$refs.form.validate()) {
         this.$store

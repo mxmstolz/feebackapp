@@ -43,10 +43,7 @@ export default {
     password: ''
   }),
   methods: {
-    login: function() {
-      console.log(this.email);
-      console.log(this.password);
-    },
+    // validate form and login
     submit() {
       if (this.$refs.form.validate()) {
         this.$store
@@ -57,7 +54,11 @@ export default {
           .then(response => {
             this.$router.push({ name: 'projects' });
           })
-          .catch(error => alert(error));
+          .catch(error => {
+            if (error.response.status === 401) {
+              alert('E-Mail oder Passwort falsch!');
+            }
+          });
       }
     }
   }
