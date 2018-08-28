@@ -4,8 +4,6 @@
       <v-flex xs12 sm10 md10 offset-sm1>
         <v-card>
           <v-toolbar color=primary dark>
-            <!-- <v-toolbar-side-icon></v-toolbar-side-icon> -->
-
             <v-toolbar-title>Projekte</v-toolbar-title>
 
             <v-spacer></v-spacer>
@@ -15,9 +13,6 @@
             <v-btn icon to="/add">
               <v-icon>add</v-icon>
             </v-btn>
-            <!-- <v-btn icon @click="add()">
-              <v-icon>code</v-icon>
-            </v-btn> -->
           </v-toolbar>
           <v-dialog v-model="dialog" max-width="290">
             <v-card>
@@ -102,6 +97,7 @@ export default {
   },
 
   methods: {
+    // get names of the projectleader from the other projects
     getNames: function() {
       this.otherProjects2 = [];
       this.names = [];
@@ -120,6 +116,7 @@ export default {
       });
     },
 
+    // open the delete dialog
     openDialog: function(index) {
       this.dialog = true;
       this.index = index;
@@ -141,6 +138,7 @@ export default {
       });
     },
 
+    // first delete its feedbackform and then the projectgroup itself
     deleteProject: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       console.log(
@@ -165,6 +163,7 @@ export default {
         .catch(error => console.log(error));
     },
 
+    // get the projects, where the logged in user is leader of
     getMyProjects: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
@@ -179,6 +178,7 @@ export default {
         .catch(error => console.log(error));
     },
 
+    // get projects, where the logged in user is member of
     getOtherProjects: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       var otherProjects = [];
@@ -208,6 +208,7 @@ export default {
         .catch(error => console.log(error));
     },
 
+    // get all users
     getUsers: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
       axios
