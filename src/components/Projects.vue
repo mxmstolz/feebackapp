@@ -56,7 +56,7 @@
             </template>
             <v-divider></v-divider>
             <v-subheader>Projektmitglied</v-subheader>
-            <template v-for="(project, index) in otherProjects2" v-if="namesLoaded">
+            <template v-for="(project, index) in otherProjects" v-if="namesLoaded">
               <v-list-tile ripple :key="project.id">
                 <v-list-tile-content @click="toggle(index)">
                   <v-list-tile-title>{{ project.name }}</v-list-tile-title>
@@ -84,8 +84,6 @@ export default {
       index: 0,
       myProjects: [{ name: '' }],
       otherProjects: [],
-      otherProjects2: [],
-      memberId: this.$store.state.memberId,
       namesLoaded: false
     };
   },
@@ -99,18 +97,14 @@ export default {
   methods: {
     // get names of the projectleader from the other projects
     getNames: function() {
-      this.otherProjects2 = [];
       this.names = [];
-      this.otherProjects.forEach(v => {
-        this.otherProjects2.push(v[0]);
-      });
-      this.otherProjects2.forEach((v, k) => {
+      this.otherProjects.forEach((v, k) => {
         this.users.forEach(v2 => {
           if (v2.id === v.managerId) {
             this.names.push(v2.name + ', ' + v2.vorname);
           }
         });
-        if (k == this.otherProjects2.length - 1) {
+        if (k == this.otherProjects.length - 1) {
           this.namesLoaded = true;
         }
       });
@@ -181,31 +175,38 @@ export default {
     // get projects, where the logged in user is member of
     getOtherProjects: function() {
       axios.defaults.headers.common['Authorization'] = this.$store.state.token;
-      var otherProjects = [];
+      // var otherProjects = [];
       this.otherProjects = [];
-      axios
-        .get(
-          '/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
-            this.memberId +
-            '%22%7D%7D'
-        )
-        .then(v => {
-          otherProjects = v.data;
-          otherProjects.forEach(v => {
-            axios
-              .get(
-                '/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
-                  v.projectId +
-                  '%22%7D%7D'
-              )
-              .then(v => {
-                this.otherProjects.push(v.data);
-                this.getNames();
-              })
-              .catch(error => console.log(error));
+      var prom = new Promise((resolve, reject) => {
+        axios
+          .get(
+            '/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+              this.memberId +
+              '%22%7D%7D'
+          )
+          .then(v => {
+            // otherProjects = v.data;
+            resolve(v.data);
           });
-        })
-        .catch(error => console.log(error));
+      }).catch(error => {
+        reject(error);
+        console.log(error);
+      });
+      prom.then(response => {
+        response.forEach(v => {
+          axios
+            .get(
+              '/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
+                v.projectId +
+                '%22%7D%7D'
+            )
+            .then(projects => {
+              this.otherProjects.push(projects.data[0]);
+              this.getNames();
+            })
+            .catch(error => console.log(error));
+        });
+      });
     },
 
     // get all users
@@ -220,7 +221,7 @@ export default {
     },
 
     toggle: function(index) {
-      this.$router.push('/addFeedback/' + this.otherProjects2[index].id);
+      this.$router.push('/addFeedback/' + this.otherProjects[index].id);
     },
 
     edit: function(index) {
@@ -231,6 +232,11 @@ export default {
           title: this.myProjects[index].name
         }
       });
+    }
+  },
+  computed: {
+    memberId() {
+      return this.$store.state.memberId;
     }
   }
 };
