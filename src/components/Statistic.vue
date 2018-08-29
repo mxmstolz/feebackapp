@@ -21,7 +21,7 @@
           </chart1>
         </v-card>
         <v-card>
-          <chart2>
+          <chart2 v-if="gotData">
           </chart2>
         </v-card>
         <v-card>
@@ -65,7 +65,8 @@ export default {
       question: '',
       selected: false,
       index: 0,
-      commentsLength: 0
+      commentsLength: 0,
+      gotData: false
     };
   },
 
@@ -76,6 +77,7 @@ export default {
       .then(response => {
         // console.log(this.$store.state.feedback);
         this.$store.commit('getAvgMood');
+        this.gotData = true;
         this.$store.commit('getComments');
         this.commentsLength = this.comments.length - 1;
         this.index = this.commentsLength;
