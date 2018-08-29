@@ -1,5 +1,5 @@
 <template>
-    <canvas id="myChart"></canvas>
+  <canvas id="myChart"></canvas>
 </template>
 
 <script>
@@ -18,13 +18,13 @@ export default {
 
       // The data for our dataset
       data: {
-        labels: this.weeks.slice(this.weeks.length - 10),
+        labels: this.weeks, //.slice(this.weeks.length - 10),
         datasets: [
           {
             label: 'Durchschnittsrating',
             // backgroundColor: 'rgb(255, 99, 132)',
             borderColor: '#42A5F5',
-            data: this.avgRating.slice(this.avgRating.length - 10)
+            data: this.avgRating //.slice(this.avgRating.length - 10)
           }
         ]
       },

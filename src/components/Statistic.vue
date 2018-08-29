@@ -103,6 +103,9 @@ export default {
     },
     comments() {
       return this.$store.state.comments;
+    },
+    avgMood() {
+      return this.$store.state.avgMood;
     }
   }
 };

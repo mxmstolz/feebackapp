@@ -28,13 +28,13 @@ export default {
 
       // The data for our dataset
       data: {
-        labels: this.weeks.slice(this.weeks.length - 10),
+        labels: this.weeks, //.slice(this.weeks.length - 10),
         datasets: [
           {
             label: 'Durchschnittszufriedenheit',
             // backgroundColor: 'rgb(255, 99, 132)',
             borderColor: '#00838F',
-            data: this.avgMood.slice(this.avgMood.length - 10)
+            data: this.avgMood //.slice(this.avgMood.length - 10)
           }
         ]
       },
