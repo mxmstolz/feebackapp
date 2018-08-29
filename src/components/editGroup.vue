@@ -16,30 +16,47 @@
         </v-card>
         <v-card>
           <v-card-text>
-            <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="name" item-value="name" multiple>
-              <template slot="selection" slot-scope="data">
-                <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
+            <v-layout align-center justify-space-between row fill-height>
+              <v-flex xs12 sm12 md9>
+                <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="name" item-value="name" multiple>
+                  <template slot="selection" slot-scope="data">
+                    <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
 
-                  {{ data.item}}
-                </v-chip>
-              </template>
-              <template slot="item" slot-scope="data">
-                <template v-if="typeof data.item !== 'object'">
-                  <v-list-tile-content v-text="data.item"></v-list-tile-content>
-                </template>
-                <template v-else>
-                  <v-list-tile-content>
-                    <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
-                  </v-list-tile-content>
-                </template>
-              </template>
-            </v-autocomplete>
+                      {{ data.item}}
+                    </v-chip>
+                  </template>
+                  <template slot="item" slot-scope="data">
+                    <template v-if="typeof data.item !== 'object'">
+                      <v-list-tile-content v-text="data.item"></v-list-tile-content>
+                    </template>
+                    <template v-else>
+                      <v-list-tile-content>
+                        <v-list-tile-title v-html="data.item.name"></v-list-tile-title>
+                      </v-list-tile-content>
+                    </template>
+                  </template>
+                </v-autocomplete>
+              </v-flex>
+              <v-flex xs12 sm12 md2>
+                <v-btn color=secondary @click="save">Speichern</v-btn>
+              </v-flex>
+            </v-layout>
           </v-card-text>
-
         </v-card>
-        <v-card>
-          <v-btn color=secondary @click="save">Speichern</v-btn>
-        </v-card>
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-card>
+            <v-card-text>
+              <v-layout align-center justify-space-between row fill-height>
+                <v-flex xs12 sm6 md9>
+                  <v-text-field :rules="emailRules" label="Neuen User einladen:" placeholder="EMail-Adresse" v-model="email" outline></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md2>
+                  <v-btn outline color=primary @click="invite">Einladen</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+          </v-card>
+        </v-form>
       </v-flex>
     </v-layout>
   </v-container>
@@ -52,11 +69,17 @@ export default {
       id: this.$route.params.id,
       name: this.$route.params.title,
       memberId: this.$store.state.memberId,
+      valid: false,
       filter: '',
       users: [],
       member: [],
       oldMembers: [],
-      names: []
+      names: [],
+      email: '',
+      emailRules: [
+        v => !!v || 'E-mail ist notwendig',
+        v => /.+@.+/.test(v) || 'E-mail muss gültig sein'
+      ]
     };
   },
 
@@ -93,6 +116,20 @@ export default {
             this.deleteMember(user.id);
           }
         });
+      }
+    },
+
+    invite: function() {
+      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      if (this.$refs.form.validate()) {
+        axios
+          .post('/members/sendEmail', {
+            to: this.email
+          })
+          .then(v => {
+            console.log(v);
+          })
+          .catch(error => console.log(error));
       }
     },
 

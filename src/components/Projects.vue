@@ -7,7 +7,7 @@
             <v-toolbar-title>Projekte</v-toolbar-title>
 
             <v-spacer></v-spacer>
-            <v-btn color=secondary @click="logout">
+            <v-btn outline @click="logout">
               Logout
             </v-btn>
             <v-btn icon to="/add">
