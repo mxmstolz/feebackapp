@@ -16,9 +16,9 @@
         </v-card>
         <v-card>
           <v-card-text>
-            <v-layout align-center justify-space-between row fill-height>
-              <v-flex xs12 sm12 md9>
-                <v-autocomplete v-model="member" :items="names" box chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="name" item-value="name" multiple>
+            <v-layout align-center justify-start row fill-height wrap>
+              <v-flex xs12 sm10 md10>
+                <v-autocomplete v-model="member" :items="names" chips color="blue-grey lighten-2" label="Projektteilnehmer" item-text="name" item-value="name" multiple>
                   <template slot="selection" slot-scope="data">
                     <v-chip :selected="data.selected" close class="chip--select-multi" @input="data.parent.selectItem(data.item)">
 
@@ -37,7 +37,7 @@
                   </template>
                 </v-autocomplete>
               </v-flex>
-              <v-flex xs12 sm12 md2>
+              <v-flex>
                 <v-btn color=secondary @click="save">Speichern</v-btn>
               </v-flex>
             </v-layout>
@@ -46,11 +46,11 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-card>
             <v-card-text>
-              <v-layout align-center justify-space-between row fill-height>
-                <v-flex xs12 sm6 md9>
-                  <v-text-field :rules="emailRules" label="Neuen User einladen:" placeholder="EMail-Adresse" v-model="email" outline></v-text-field>
+              <v-layout align-center justify-start row wrap>
+                <v-flex xs12 sm10 md10>
+                  <v-text-field :rules="emailRules" label="Neuen User einladen:" placeholder="EMail-Adresse" v-model="email"></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md2>
+                <v-flex>
                   <v-btn outline color=primary @click="invite">Einladen</v-btn>
                 </v-flex>
               </v-layout>
