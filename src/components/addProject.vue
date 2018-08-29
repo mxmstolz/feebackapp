@@ -18,10 +18,10 @@
                     <v-card v-for="(question, index) in questions" :key="index">
                         <v-container>
                             <v-layout align-start justify-start row fill-height wrap>
-                                <v-flex xs12 sm6 md9>
+                                <v-flex xs12 sm9 md9>
                                     <v-text-field :rules="[v => !!v || 'Es muss eine Frage angegeben werden']" required v-model="question.question" label="Frage" type="text"></v-text-field>
                                 </v-flex>
-                                <v-flex xs12 sm6 md2>
+                                <v-flex xs12 sm2 md2>
                                     <v-select :rules="[v => !!v || 'Es muss eine Granularität ausgewählt werden']" v-model="question.option" :items="granularity" label="Granularität" required></v-select>
                                 </v-flex>
                                 <v-flex>
@@ -55,19 +55,19 @@ export default {
   data() {
     return {
       valid: false,
-      projectId: '',
-      projectName: '',
+      projectId: "",
+      projectName: "",
       select: null,
       memberId: this.$store.state.memberId,
       count: 1,
-      questions: [{ question: '', option: null }],
+      questions: [{ question: "", option: null }],
       granularity: [4, 6, 8, 10]
     };
   },
   methods: {
     //   add new questionrow
     add: function() {
-      this.questions.push({ question: '', option: null });
+      this.questions.push({ question: "", option: null });
     },
 
     // delete questionrow
@@ -77,17 +77,17 @@ export default {
 
     // validate the form and create a new project
     submit: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
       if (this.$refs.form.validate()) {
         axios
-          .post('/project_groups', {
+          .post("/project_groups", {
             name: this.projectName,
             managerId: this.memberId
           })
           .then(v => {
             this.projectId = v.data.id;
             this.postQuestions();
-            this.$router.push('/');
+            this.$router.push("/");
           })
           .catch(error => console.log(error));
       }
@@ -95,10 +95,10 @@ export default {
 
     // create the feedbackbow
     postQuestions: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
       this.questions.forEach(v => {
         axios
-          .post('/feedback_questions', {
+          .post("/feedback_questions", {
             question: v.question,
             granularity: v.option,
             projectGroupId: this.projectId

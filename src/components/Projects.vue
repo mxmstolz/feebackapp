@@ -82,7 +82,7 @@ export default {
       users: [],
       dialog: false,
       index: 0,
-      myProjects: [{ name: '' }],
+      myProjects: [{ name: "" }],
       otherProjects: [],
       namesLoaded: false
     };
@@ -101,7 +101,7 @@ export default {
       this.otherProjects.forEach((v, k) => {
         this.users.forEach(v2 => {
           if (v2.id === v.managerId) {
-            this.names.push(v2.name + ', ' + v2.vorname);
+            this.names.push(v2.name + ", " + v2.vorname);
           }
         });
         if (k == this.otherProjects.length - 1) {
@@ -117,14 +117,14 @@ export default {
     },
 
     logout: function() {
-      this.$store.dispatch('destroyToken').then(response => {
-        this.$router.push({ name: 'login' });
+      this.$store.dispatch("destroyToken").then(response => {
+        this.$router.push({ name: "login" });
       });
     },
 
     showStatistic: function(index) {
       this.$router.push({
-        name: 'statistic',
+        name: "statistic",
         params: {
           id: this.myProjects[index].id,
           title: this.myProjects[index].name
@@ -132,23 +132,36 @@ export default {
       });
     },
 
-    // first delete its feedbackform and then the projectgroup itself
+    // first delete its members and then the projectgroup itself
     deleteProject: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
-      console.log(
-        'Lösche Projekt mit der ID: ' + this.myProjects[this.index].id
-      );
-      axios
-        .delete(
-          '/project_groups/' + this.myProjects[this.index].id + '/feedbackForm'
-        )
-        .then(() => {
-          console.log('FeedbackForm gelöscht');
-        })
-        .catch(error => console.log(error));
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
+      var prom = new Promise((resolve, reject) => {
+        axios
+          .get(
+            "/groups_users/?filter=%7B%22where%22%3A%7B%22projectId%22%3A%22" +
+              this.myProjects[this.index].id +
+              "%22%7D%7D"
+          )
+          .then(v => {
+            resolve(v.data);
+          })
+          .catch(error => {
+            reject(error);
+            console.log(error);
+          });
+      });
+      prom.then(v => {
+        console.log(v);
+        v.forEach(value => {
+          axios
+            .delete("/groups_users/" + value.id)
+            .then(() => {})
+            .catch(error => console.log(error));
+        });
+      });
 
       axios
-        .delete('/project_groups/' + this.myProjects[this.index].id)
+        .delete("/project_groups/" + this.myProjects[this.index].id)
         .then(() => {
           this.myProjects = [];
           this.getMyProjects();
@@ -159,12 +172,12 @@ export default {
 
     // get the projects, where the logged in user is leader of
     getMyProjects: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
       axios
         .get(
-          '/project_groups?filter=%7B%22where%22%3A%7B%22managerId%22%3A%22' +
+          "/project_groups?filter=%7B%22where%22%3A%7B%22managerId%22%3A%22" +
             this.memberId +
-            '%22%7D%7D'
+            "%22%7D%7D"
         )
         .then(v => {
           this.myProjects = v.data;
@@ -174,15 +187,15 @@ export default {
 
     // get projects, where the logged in user is member of
     getOtherProjects: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
       // var otherProjects = [];
       this.otherProjects = [];
       var prom = new Promise((resolve, reject) => {
         axios
           .get(
-            '/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22' +
+            "/groups_users?filter=%7B%22where%22%3A%7B%22memberId%22%3A%22" +
               this.memberId +
-              '%22%7D%7D'
+              "%22%7D%7D"
           )
           .then(v => {
             // otherProjects = v.data;
@@ -196,9 +209,9 @@ export default {
         response.forEach(v => {
           axios
             .get(
-              '/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22' +
+              "/project_groups?filter=%7B%22where%22%3A%7B%22id%22%3A%22" +
                 v.projectId +
-                '%22%7D%7D'
+                "%22%7D%7D"
             )
             .then(projects => {
               this.otherProjects.push(projects.data[0]);
@@ -211,9 +224,9 @@ export default {
 
     // get all users
     getUsers: function() {
-      axios.defaults.headers.common['Authorization'] = this.$store.state.token;
+      axios.defaults.headers.common["Authorization"] = this.$store.state.token;
       axios
-        .get('/members')
+        .get("/members")
         .then(v => {
           this.users = v.data;
         })
@@ -221,12 +234,12 @@ export default {
     },
 
     toggle: function(index) {
-      this.$router.push('/addFeedback/' + this.otherProjects[index].id);
+      this.$router.push("/addFeedback/" + this.otherProjects[index].id);
     },
 
     edit: function(index) {
       this.$router.push({
-        name: 'edit',
+        name: "edit",
         params: {
           id: this.myProjects[index].id,
           title: this.myProjects[index].name
